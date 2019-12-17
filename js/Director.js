@@ -51,8 +51,8 @@ export class Director{
         const birds = this.dataStore.get('birds');
         const land = this.dataStore.get('land');
         const pipes = this.dataStore.get('pipes');
-
-
+        const score = this.dataStore.get('score');
+  
         // 小鸟撞天撞地
         if(birds.birdsY[0]<0 || birds.birdsY[0]+birds.birdsHeight[0]>land.y){
             this.isGameOver = true;
@@ -81,6 +81,10 @@ export class Director{
                 return;
             }
         }
+        if(birds.birdsX[0]>pipes[0].x+pipes[0].width&&score.canAdd){
+          score.canAdd = false;
+          score.scoreNum++;
+        }
     }
 
 
@@ -90,8 +94,10 @@ export class Director{
         if(!this.isGameOver){
 
 
-            this.dataStore.get('background').draw();
+        this.dataStore.get('background').draw();
         
+        this.dataStore.get('score').draw();
+
         // 获取水管组
         const pipes = this.dataStore.get('pipes');
         // 判断,添加水管
@@ -105,6 +111,7 @@ export class Director{
         if(pipes[0].x+pipes[0].width<0 && pipes.length==4){
             pipes.shift();
             pipes.shift();
+            this.dataStore.get('score').canAdd = true;
         }
 
 
@@ -122,6 +129,16 @@ export class Director{
         }else{
             // 游戏结束
             // alert('游戏结束');
+          this.dataStore.get('background').draw();
+          this.dataStore.get('pipes').forEach(p=>{
+            p.draw();
+          })
+          this.dataStore.get('birds').draw();
+          this.dataStore.get('score').draw();
+          this.dataStore.get('land').draw();
+          this.dataStore.get('startButton').draw();
+          cancelAnimationFrame(this.id);
+          this.dataStore.destroy();
         }
         
     }
